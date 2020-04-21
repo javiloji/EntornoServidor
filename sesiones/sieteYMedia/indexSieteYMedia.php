@@ -7,9 +7,34 @@ session_start();
 
 if(!isset($_SESSION["juego"])){
     $_SESSION["juego"]= [];
+    $_SESSION["partidaAcabada"] = false;
 }
 
-if(!isset($_POST["submit"])){
+$paloAleatorio = rand(1,4);
+
+$figuraAleatoria = rand(1,10);
+
+$puntuacionJugador = 0;
+
+$puntuacionMaquina = 0;
+
+// $baraja = new Baraja();
+
+
+
+// print_r($baraja);
+
+// echo $baraja;
+
+// foreach ($baraja->getBaraja() as $palo => $carta) {
+//     foreach ($carta as $clave => $figura) {
+//         echo "<br><br>";
+//         echo $baraja;
+//         echo $figura;
+
+//     }
+// }
+
    
 ?>
 
@@ -28,8 +53,9 @@ if(!isset($_POST["submit"])){
                     <?php
                         echo "<br><br>";
                         echo "<h1>SIETE Y MEDIA</h1>";
-                        echo "<p style='text-align: center'><input type='submit' name='submit' value='Pedir Carta' /></p>";
-                        echo "<a href='cerrarSesion.php' >Cerrar sesión</a>";                        
+                        echo "<p style='text-align: center'><input type='submit' name='pedirCarta' value='Pedir Carta' /></p>";
+                        echo "<p style='text-align: center'><input type='submit' name='plantarse' value='Plantarse' /></p>";
+                        echo "<a href='cerrarSesionSieteYMedia.php' >Finalizar Partida</a>";                        
                     ?>
             </form>
         </body>
@@ -37,55 +63,105 @@ if(!isset($_POST["submit"])){
 
 <?php
             
+        if(isset($_POST["plantarse"])){
+            $_SESSION["partidaAcabada"] = true;
+
+            echo "<br><br>";
+            echo "Tienes las siguientes cartas:<br><br>";  
+
+            foreach ($_SESSION["juego"] as $array => $carta) {
+                echo "<img src='".$carta->getImagenCarta()."'>";                    
+                
+                if($carta->getfigura()<8){
+                    $puntuacionJugador+=$carta->getFigura();
+                }
+                else{
+                    $puntuacionJugador+=0.5;
+                }
+
+            }
+
+
+                if($puntuacionJugador>7.5){
+                echo "<br><br>Llevas $puntuacionJugador puntos. Has perdido";
+                }
+                else if($puntuacionJugador<7.5){
+                    echo "<br><br>Llevas $puntuacionJugador puntos.Te has plantado";
+                }
+                else{
+                    echo "<br><br>Llevas $puntuacionJugador puntos. Has ganado";
+
+                }
+        }
         
 
-        }else{
+        if(isset($_POST["pedirCarta"])){
 
-            $paloAleatorio = rand(1,4);
-
-            $figuraAleatoria = rand(1,10);
-
+            
+            if(!$_SESSION["partidaAcabada"]){
+                
             $carta = new Carta($paloAleatorio,$figuraAleatoria);
-
-            $baraja = new Baraja();
 
             
 
-            print_r($baraja);
+            array_push($_SESSION["juego"], $carta);
 
-            // echo $baraja;
 
-            foreach ($baraja->getBaraja() as $palo => $carta) {
-                foreach ($carta as $clave => $figura) {
                     echo "<br><br>";
-                    echo $baraja;
-                    echo $figura;
+                    echo "Tienes las siguientes cartas:<br><br>";  
+
+                    foreach ($_SESSION["juego"] as $array => $carta) {
+                        echo "<img src='".$carta->getImagenCarta()."'>";                    
+                        
+                        if($carta->getfigura()<8){
+                            $puntuacionJugador+=$carta->getFigura();
+                        }
+                        else{
+                            $puntuacionJugador+=0.5;
+                        }
+
+                    }
+
+                    if($puntuacionJugador>7.5){
+                        echo "<br><br>Llevas $puntuacionJugador puntos. Has perdido";
+                        $_SESSION["partidaAcabada"] = true;
+                    }
+                    else{
+                        echo "<br><br>Llevas $puntuacionJugador puntos. Puedes seguir jugando.";
+
+                    }
+                    // echo $carta->getImagenCarta(); 
+                ?>
+                <?php
+            }
+            else{
+
+                echo "<br><br>";
+                echo "Tienes las siguientes cartas:<br><br>"; 
+                foreach ($_SESSION["juego"] as $array => $carta) {
+                    echo "<img src='".$carta->getImagenCarta()."'>";                    
+                    
+                    if($carta->getfigura()<8){
+                        $puntuacionJugador+=$carta->getFigura();
+                    }
+                    else{
+                        $puntuacionJugador+=0.5;
+                    }
+
+                }
+
+                if($puntuacionJugador>7.5){
+                echo "<br><br>Llevas $puntuacionJugador puntos. Has perdido";
+                }
+                else if($puntuacionJugador<7.5){
+                    echo "<br><br>Llevas $puntuacionJugador puntos.Te has plantado";
+                }
+                else{
+                    echo "<br><br>Llevas $puntuacionJugador puntos. Has ganado";
 
                 }
             }
-
-            // $serie = new Serie($_POST["nombrePelicula"],$_POST["plataforma"]);
-
-            // array_push($_SESSION["juego"], $serie);
-
-            ?>
-             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" style="text-align: center">
-                
-                <?php
-
-                    echo "<br><br>";
-                    echo "<h1>SIETE Y MEDIA</h1>";
-                    echo "<p style='text-align: center'><input type='submit' name='submit' value='Pedir Carta' /></p>";
-                    echo "<a href='cerrarSesion.php' >Cerrar sesión</a>";                       
-                ?>
-            </form>
-                <?php
-                // foreach ($_SESSION["series"] as $clave => $valor) {
-                //     echo '<tr style="border: solid black 1px; padding: 10px; background: #EADAD6">';
-                //     echo "<td>" . $valor->getNombre() . "</td>";
-                //     echo "<td>" . $valor->getPlataforma() . "</td>";
-                //     echo '</tr>';
-                // }
             }
+            echo "<br><br><a target='_blank' href='https://github.com/javiloji/EntornoServidor/tree/master/sesiones/sieteYMedia'>Enlace GitHub</a>"
 
                 ?>

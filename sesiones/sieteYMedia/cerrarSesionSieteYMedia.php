@@ -4,6 +4,6 @@ session_start();
 
 session_destroy();
 
-header("Location:indexSeries.php");
+header("Location:indexSieteYMedia.php");
 
 ?>
